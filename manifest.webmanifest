@@ -1,0 +1,12 @@
+
+{
+  "name": "Deutsch – Viet Wörterbuch",
+  "short_name": "Deutsch Wörterbuch",
+  "description": "Offline-Wörterbuch Deutsch – Vietnamesisch",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f4",
+  "theme_color": "#174c3c"
+}
