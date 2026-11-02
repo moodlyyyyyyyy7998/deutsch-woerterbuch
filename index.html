@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#174c3c">
+<link rel="manifest" href="./manifest.webmanifest">
 <title>Deutsch – Viet Wörterbuch</title>
 <style>
 *{box-sizing:border-box}
@@ -41,7 +42,7 @@ footer{text-align:center;color:#829087;font-size:12px;padding:25px}
 <div id="saved">Chưa có từ nào được lưu.</div>
 </div>
 </main>
-<footer>Phiên bản 1.0 · Deutsch – Viet Wörterbuch</footer>
+<footer>Deutsch – Viet Wörterbuch · Offline</footer>
 <script>
 const words=[
 {word:"die Haut",plural:"die Häute",type:"Substantiv",vi:"Da, làn da",en:"Skin",definition:"Die äußere Hülle des menschlichen oder tierischen Körpers.",synonyms:"—",example:"Die Haut schützt den Körper vor äußeren Einflüssen."},
@@ -50,14 +51,12 @@ const words=[
 {word:"der Dekubitus",plural:"die Dekubitalgeschwüre",type:"Substantiv",vi:"Loét do tì đè",en:"Pressure ulcer",definition:"Eine örtlich begrenzte Schädigung der Haut und des darunterliegenden Gewebes durch anhaltenden Druck oder Druck in Verbindung mit Scherkräften.",synonyms:"Druckgeschwür",example:"Regelmäßige Bewegung kann das Dekubitusrisiko verringern."},
 {word:"die Atmung",plural:"—",type:"Substantiv",vi:"Sự hô hấp",en:"Respiration",definition:"Die Aufnahme von Sauerstoff und die Abgabe von Kohlendioxid.",synonyms:"Respiration",example:"Die Atmung wird regelmäßig beobachtet."},
 {word:"die Hautpflege",plural:"—",type:"Substantiv",vi:"Chăm sóc da",en:"Skin care",definition:"Maßnahmen zur Reinigung und Pflege der Haut.",synonyms:"Hautversorgung",example:"Eine regelmäßige Hautpflege ist wichtig."},
-{word:"das Ödem",plural:"die Ödeme",type:"Substantiv",vi:"Phù, tình trạng tích tụ dịch trong mô",en:"Edema",definition:"Eine Ansammlung von Flüssigkeit im Gewebe.",synonyms:"Gewebeschwellung",example:"Das Ödem ist am Unterschenkel sichtbar."},
+{word:"das Ödem",plural:"die Ödeme",type:"Substantiv",vi:"Phù",en:"Edema",definition:"Eine Ansammlung von Flüssigkeit im Gewebe.",synonyms:"Gewebeschwellung",example:"Das Ödem ist am Unterschenkel sichtbar."},
 {word:"die Entzündung",plural:"die Entzündungen",type:"Substantiv",vi:"Viêm",en:"Inflammation",definition:"Eine Reaktion des Körpers auf schädliche Reize.",synonyms:"Inflammatorische Reaktion",example:"Die Entzündung verursacht Schmerzen und Rötung."},
 {word:"der Schmerz",plural:"die Schmerzen",type:"Substantiv",vi:"Cơn đau",en:"Pain",definition:"Eine unangenehme Sinnes- und Gefühlsempfindung.",synonyms:"Pein",example:"Der Patient klagt über starke Schmerzen."},
 {word:"die Bewegung",plural:"die Bewegungen",type:"Substantiv",vi:"Sự vận động",en:"Movement",definition:"Eine Veränderung der Lage oder Position des Körpers.",synonyms:"Mobilität, Aktivität",example:"Regelmäßige Bewegung ist gesund."}
 ];
-
 let saved=JSON.parse(localStorage.getItem("savedWords")||"[]");
-
 function showSaved(){
 const box=document.getElementById("saved");
 box.replaceChildren();
@@ -69,7 +68,6 @@ item.style.padding="7px 0";
 box.appendChild(item);
 });
 }
-
 function showResults(list){
 const results=document.getElementById("results");
 results.replaceChildren();
@@ -120,7 +118,6 @@ card.appendChild(actions);
 results.appendChild(card);
 });
 }
-
 document.getElementById("search").addEventListener("input",e=>{
 const q=e.target.value.trim().toLocaleLowerCase();
 if(!q){
@@ -134,6 +131,13 @@ showResults(words.filter(w=>
 ));
 });
 showSaved();
+if("serviceWorker" in navigator){
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("./sw.js")
+.then(()=>console.log("Offline-Modus aktiviert"))
+.catch(error=>console.error("Service Worker Fehler:",error));
+});
+}
 </script>
 </body>
 </html>
