@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiểm tra SQLite</title>
+<style>
+body{font-family:Arial,sans-serif;padding:18px;background:#f3f6f4;color:#18352b}
+h2{font-size:22px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:14px;border-radius:10px;font-size:13px}
+button{padding:12px 18px;background:#174c3c;color:white;border:0;border-radius:8px}
+</style>
+</head>
+<body>
+<h2>Kiểm tra cơ sở dữ liệu từ điển</h2>
+<p id="status">Đang tải thư viện SQLite...</p>
+<button id="copy" disabled>Sao chép cấu trúc</button>
+<pre id="result">Vui lòng chờ...</pre>
+
+<script src="./sql-wasm.js"></script>
+<script>
+async function start() {
+  const status = document.getElementById("status");
+  const result = document.getElementById("result");
+  const copy = document.getElementById("copy");
+
+  try {
+    const SQL = await initSqlJs({
+      locateFile: file => "./" + file
+    });
+
+    status.textContent = "Đang tải cơ sở dữ liệu...";
+    const response = await fetch("./vn_de_dictionary.db");
+
+    if (!response.ok) {
+      throw new Error("Không tải được DB: HTTP " + response.status);
+    }
+
+    const buffer = await response.arrayBuffer();
+    const db = new SQL.Database(new Uint8Array(buffer));
+
+    const tables = db.exec(
+      "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+    );
+
+    let output = "KÍCH THƯỚC DB: " +
+      (buffer.byteLength / 1024 / 1024).toFixed(2) + " MB\n\n";
+
+    if (!tables.length) {
+      throw new Error("Không tìm thấy bảng dữ liệu.");
+    }
+
+    for (const row of tables[0].values) {
+      const name = row[0];
+      output += "\n============================\n";
+      output += "BẢNG: " + name + "\n";
+
+      const safeName = name.replace(/'/g, "''");
+      const columns = db.exec("PRAGMA table_info('" + safeName + "')");
+
+      if (columns.length) {
+        output += "CÁC CỘT:\n";
+        for (const col of columns[0].values) {
+          output += "- " + col[1] + " (" + col[2] + ")\n";
+        }
+      }
+
+      const sample = db.exec(
+        'SELECT * FROM "' + name.replace(/"/g, '""') + '" LIMIT 1'
+      );
+
+      if (sample.length && sample[0].values.length) {
+        output += "DỮ LIỆU MẪU:\n";
+        output += JSON.stringify(
+          sample[0].values[0]
+        ).slice(0, 700) + "\n";
+      }
+    }
+
+    result.textContent = output;
+    status.textContent = "Đã đọc SQLite thành công!";
+    copy.disabled = false;
+
+    copy.onclick = async () => {
+      await navigator.clipboard.writeText(output);
+      status.textContent = "Đã sao chép cấu trúc!";
+    };
+
+    db.close();
+  } catch (error) {
+    status.textContent = "Có lỗi khi đọc dữ liệu.";
+    result.textContent = error.message;
+  }
+}
+
+start();
+</script>
+</body>
+</html>
