@@ -4,140 +4,372 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#174c3c">
+<meta name="theme-color" content="#176b70">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>Deutsch – Viet Wörterbuch</title>
+<title>MedDeutsch – Từ điển Đức Việt</title>
 <style>
+:root{
+  --primary:#176b70;
+  --dark:#174b52;
+  --bg:#f1f6f7;
+  --card:#ffffff;
+  --muted:#71878a;
+  --border:#dce8e9;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6f4;color:#20352c}
-header{background:#174c3c;color:white;padding:25px 18px}
-header h1{margin:0 0 8px;font-size:23px}
-header p{margin:0;color:#d7e8df}
-main{max-width:650px;margin:auto;padding:18px}
-input,button{font-size:16px;border-radius:10px;padding:13px}
-input{width:100%;border:1px solid #ccd8d0;background:white;margin:10px 0}
-button{border:0;background:#174c3c;color:white;cursor:pointer}
-.card{background:white;padding:17px;border-radius:14px;margin-top:14px;box-shadow:0 2px 8px #0000000d}
-.word{font-size:23px;font-weight:bold;color:#174c3c}
-.meta{color:#64756c;font-size:14px;margin:7px 0}
-.section{margin-top:12px;line-height:1.5}
-.actions{display:flex;gap:8px;margin-top:12px}
-.secondary{background:#e5eee8;color:#174c3c}
-#message{color:#64756c;margin-top:12px}
-footer{text-align:center;color:#829087;font-size:12px;padding:25px}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:#263b40;
+}
+header{
+  background:linear-gradient(135deg,#14565e,#21858a);
+  color:white;
+  padding:22px 18px 25px;
+  border-radius:0 0 24px 24px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:45px;height:45px;border-radius:14px;
+  background:#ffffff25;
+  display:grid;place-items:center;font-size:25px;
+}
+.brand h1{font-size:21px;margin:0}
+.brand p{font-size:12px;margin:4px 0 0;color:#d4eeee}
+.tag{
+  margin-left:auto;border:1px solid #ffffff65;
+  border-radius:20px;padding:5px 9px;font-size:11px;
+}
+main{max-width:720px;margin:auto;padding:16px}
+.searchbox{
+  background:white;padding:17px;border-radius:18px;
+  box-shadow:0 5px 20px #174b520c;
+  margin-top:-2px;
+}
+label{font-size:13px;font-weight:650;color:var(--dark)}
+input,select{
+  width:100%;padding:14px;margin-top:9px;
+  border:1px solid var(--border);border-radius:11px;
+  background:#f9fbfb;font-size:16px;color:#263b40;
+  outline:none;
+}
+input:focus,select:focus{border-color:var(--primary)}
+.controls{
+  display:grid;grid-template-columns:1fr 105px;gap:9px;
+  margin-top:12px;
+}
+button{
+  border:0;border-radius:11px;padding:12px;
+  background:var(--primary);color:white;
+  font-size:14px;font-weight:650;
+}
+button:active{opacity:.8}
+.status{
+  font-size:12px;color:var(--muted);
+  margin:13px 2px 4px;line-height:1.5;
+}
+.stats{
+  display:flex;justify-content:space-between;
+  color:var(--muted);font-size:12px;
+  margin:18px 3px 10px;
+}
+.result{
+  background:white;border:1px solid var(--border);
+  border-radius:15px;padding:16px;margin-bottom:11px;
+  box-shadow:0 3px 12px #174b5208;
+}
+.wordline{display:flex;align-items:center;gap:8px}
+.word{
+  font-size:21px;font-weight:750;color:var(--dark);
+  overflow-wrap:anywhere;
+}
+.favorite{
+  margin-left:auto;background:#eaf3f4;color:var(--primary);
+  padding:8px 10px;font-size:17px;
+}
+.source{font-size:11px;color:var(--muted);margin-top:5px}
+.meaning{
+  white-space:pre-wrap;overflow-wrap:anywhere;
+  line-height:1.65;font-size:14px;margin-top:13px;
+  border-top:1px solid var(--border);padding-top:11px;
+}
+.empty{
+  text-align:center;padding:35px 15px;color:var(--muted);
+  background:white;border-radius:15px;line-height:1.7;
+}
+.footer{
+  text-align:center;color:var(--muted);
+  font-size:11px;padding:24px 10px;
+}
+.hidden{display:none}
 </style>
 </head>
 <body>
+
 <header>
-<h1>🇩🇪 Deutsch – Viet Wörterbuch</h1>
-<p>Từ điển tiếng Đức offline · Deutsch – Việt</p>
+  <div class="brand">
+    <div class="logo">⚕</div>
+    <div>
+      <h1>MedDeutsch</h1>
+      <p>Deutsch – Vietnamesisch · Pflege & Medizin</p>
+    </div>
+    <div class="tag">Offline</div>
+  </div>
 </header>
+
 <main>
-<h3>🔎 Tra cứu từ vựng</h3>
-<input id="search" placeholder="Nhập từ tiếng Đức hoặc tiếng Việt...">
-<div id="results"></div>
-<p id="message">Nhập từ để bắt đầu tra cứu.</p>
-<div class="card">
-<h3>⭐ Từ đã lưu</h3>
-<div id="saved">Chưa có từ nào được lưu.</div>
-</div>
+  <section class="searchbox">
+    <label for="search">TRA CỨU TỪ VỰNG</label>
+    <input id="search" type="search"
+      placeholder="Nhập từ Đức hoặc nghĩa tiếng Việt..."
+      autocomplete="off">
+
+    <div class="controls">
+      <select id="mode">
+        <option value="all">Tìm hai chiều</option>
+        <option value="de">Tiếng Đức</option>
+        <option value="vi">Tiếng Việt</option>
+      </select>
+      <button id="searchBtn">Tìm kiếm</button>
+    </div>
+
+    <div class="status" id="status">
+      Đang khởi động từ điển...
+    </div>
+  </section>
+
+  <div class="stats">
+    <span id="count">54.153 từ trong kho</span>
+    <span id="found"></span>
+  </div>
+
+  <section id="results">
+    <div class="empty">
+      <div style="font-size:32px">⚕</div>
+      Nhập từ cần tra cứu để bắt đầu.
+    </div>
+  </section>
+
+  <div class="footer">
+    MedDeutsch · Deutsch–Vietnamesisch<br>
+    Dữ liệu từ điển DucViet · Bản offline
+  </div>
 </main>
-<footer>Deutsch – Viet Wörterbuch · Offline</footer>
+
+<script src="./sql-wasm.js"></script>
 <script>
-const words=[
-{word:"die Haut",plural:"die Häute",type:"Substantiv",vi:"Da, làn da",en:"Skin",definition:"Die äußere Hülle des menschlichen oder tierischen Körpers.",synonyms:"—",example:"Die Haut schützt den Körper vor äußeren Einflüssen."},
-{word:"die Pflege",plural:"—",type:"Substantiv",vi:"Sự chăm sóc",en:"Care",definition:"Maßnahmen zur Unterstützung, Erhaltung und Förderung des Wohlbefindens.",synonyms:"Betreuung, Versorgung",example:"Die Pflege eines älteren Menschen erfordert Geduld."},
-{word:"das Wasser",plural:"—",type:"Substantiv",vi:"Nước",en:"Water",definition:"Eine farblose, geruchlose Flüssigkeit, die für das Leben notwendig ist.",synonyms:"—",example:"Der Mensch braucht täglich Wasser."},
-{word:"der Dekubitus",plural:"die Dekubitalgeschwüre",type:"Substantiv",vi:"Loét do tì đè",en:"Pressure ulcer",definition:"Eine örtlich begrenzte Schädigung der Haut und des darunterliegenden Gewebes durch anhaltenden Druck oder Druck in Verbindung mit Scherkräften.",synonyms:"Druckgeschwür",example:"Regelmäßige Bewegung kann das Dekubitusrisiko verringern."},
-{word:"die Atmung",plural:"—",type:"Substantiv",vi:"Sự hô hấp",en:"Respiration",definition:"Die Aufnahme von Sauerstoff und die Abgabe von Kohlendioxid.",synonyms:"Respiration",example:"Die Atmung wird regelmäßig beobachtet."},
-{word:"die Hautpflege",plural:"—",type:"Substantiv",vi:"Chăm sóc da",en:"Skin care",definition:"Maßnahmen zur Reinigung und Pflege der Haut.",synonyms:"Hautversorgung",example:"Eine regelmäßige Hautpflege ist wichtig."},
-{word:"das Ödem",plural:"die Ödeme",type:"Substantiv",vi:"Phù",en:"Edema",definition:"Eine Ansammlung von Flüssigkeit im Gewebe.",synonyms:"Gewebeschwellung",example:"Das Ödem ist am Unterschenkel sichtbar."},
-{word:"die Entzündung",plural:"die Entzündungen",type:"Substantiv",vi:"Viêm",en:"Inflammation",definition:"Eine Reaktion des Körpers auf schädliche Reize.",synonyms:"Inflammatorische Reaktion",example:"Die Entzündung verursacht Schmerzen und Rötung."},
-{word:"der Schmerz",plural:"die Schmerzen",type:"Substantiv",vi:"Cơn đau",en:"Pain",definition:"Eine unangenehme Sinnes- und Gefühlsempfindung.",synonyms:"Pein",example:"Der Patient klagt über starke Schmerzen."},
-{word:"die Bewegung",plural:"die Bewegungen",type:"Substantiv",vi:"Sự vận động",en:"Movement",definition:"Eine Veränderung der Lage oder Position des Körpers.",synonyms:"Mobilität, Aktivität",example:"Regelmäßige Bewegung ist gesund."}
-];
-let saved=JSON.parse(localStorage.getItem("savedWords")||"[]");
-function showSaved(){
-const box=document.getElementById("saved");
-box.replaceChildren();
-if(!saved.length){box.textContent="Chưa có từ nào được lưu.";return;}
-saved.forEach(word=>{
-const item=document.createElement("div");
-item.textContent="⭐ "+word;
-item.style.padding="7px 0";
-box.appendChild(item);
-});
+let database = null;
+let favorites = new Set(
+  JSON.parse(localStorage.getItem("medFavorites") || "[]")
+);
+
+const $ = id => document.getElementById(id);
+
+function showStatus(message){
+  $("status").textContent = message;
 }
-function showResults(list){
-const results=document.getElementById("results");
-results.replaceChildren();
-if(!list.length){
-document.getElementById("message").textContent="Không tìm thấy từ này.";
-return;
+
+async function loadDatabase(){
+  try{
+    showStatus("Đang tải thư viện SQLite...");
+
+    const SQL = await initSqlJs({
+      locateFile: file => "./" + file
+    });
+
+    showStatus("Đang tải kho từ điển 14,54 MB...");
+
+    const response = await fetch("./vn_de_dictionary.db");
+
+    if(!response.ok){
+      throw new Error("Không tải được cơ sở dữ liệu. HTTP " + response.status);
+    }
+
+    const buffer = await response.arrayBuffer();
+    database = new SQL.Database(new Uint8Array(buffer));
+
+    const count = database.exec("SELECT COUNT(*) FROM words");
+
+    if(count.length){
+      $("count").textContent =
+        Number(count[0].values[0][0]).toLocaleString("de-DE") +
+        " từ trong kho";
+    }
+
+    showStatus("Đã sẵn sàng! Bạn có thể tra cứu từ điển.");
+  }catch(error){
+    console.error(error);
+    showStatus("Lỗi tải dữ liệu: " + error.message);
+    $("results").innerHTML =
+      '<div class="empty">Không thể tải từ điển. Hãy kiểm tra kết nối hoặc tải lại trang.</div>';
+  }
 }
-document.getElementById("message").textContent="Tìm thấy "+list.length+" từ.";
-list.forEach(w=>{
-const card=document.createElement("div");
-card.className="card";
-const title=document.createElement("div");
-title.className="word";
-title.textContent=w.word;
-card.appendChild(title);
-const meta=document.createElement("div");
-meta.className="meta";
-meta.textContent=w.type+" · Plural: "+w.plural;
-card.appendChild(meta);
-[
-["🇻🇳 Tiếng Việt",w.vi],
-["🇬🇧 English",w.en],
-["📖 Erklärung auf Deutsch",w.definition],
-["🔁 Synonyme",w.synonyms],
-["💬 Beispiel",w.example]
-].forEach(([label,value])=>{
-const section=document.createElement("div");
-section.className="section";
-const strong=document.createElement("strong");
-strong.textContent=label+": ";
-section.append(strong,document.createTextNode(value));
-card.appendChild(section);
-});
-const button=document.createElement("button");
-button.className="secondary";
-button.textContent=saved.includes(w.word)?"★ Đã lưu":"☆ Lưu từ";
-button.addEventListener("click",()=>{
-if(saved.includes(w.word)){saved=saved.filter(x=>x!==w.word);}
-else{saved.push(w.word);}
-localStorage.setItem("savedWords",JSON.stringify(saved));
-showSaved();
-showResults(list);
-});
-const actions=document.createElement("div");
-actions.className="actions";
-actions.appendChild(button);
-card.appendChild(actions);
-results.appendChild(card);
-});
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  })[c]);
 }
-document.getElementById("search").addEventListener("input",e=>{
-const q=e.target.value.trim().toLocaleLowerCase();
-if(!q){
-document.getElementById("results").replaceChildren();
-document.getElementById("message").textContent="Nhập từ để bắt đầu tra cứu.";
-return;
+
+function searchDictionary(){
+  if(!database){
+    showStatus("Từ điển chưa tải xong.");
+    return;
+  }
+
+  const query = $("search").value.trim();
+  const mode = $("mode").value;
+
+  if(!query){
+    $("results").innerHTML =
+      '<div class="empty">Hãy nhập từ tiếng Đức hoặc tiếng Việt.</div>';
+    $("found").textContent = "";
+    return;
+  }
+
+  try{
+    showStatus("Đang tìm kiếm...");
+    const pattern = "%" + query + "%";
+
+    let sql = `
+      SELECT
+        w.id,
+        w.word,
+        m.meaning_text,
+        m.part_of_speech,
+        s.name
+      FROM words w
+      LEFT JOIN meanings m ON m.word_id = w.id
+      LEFT JOIN sources s ON s.id = m.source_id
+    `;
+
+    let bindings = [];
+
+    if(mode === "de"){
+      sql += ` WHERE w.word LIKE ? COLLATE NOCASE`;
+      bindings = [pattern];
+    }else if(mode === "vi"){
+      sql += ` WHERE m.meaning_text LIKE ? COLLATE NOCASE`;
+      bindings = [pattern];
+    }else{
+      sql += `
+        WHERE w.word LIKE ? COLLATE NOCASE
+        OR m.meaning_text LIKE ? COLLATE NOCASE
+      `;
+      bindings = [pattern,pattern];
+    }
+
+    sql += `
+      ORDER BY
+        CASE WHEN w.word = ? COLLATE NOCASE THEN 0
+             WHEN w.word LIKE ? COLLATE NOCASE THEN 1
+             ELSE 2 END,
+        w.word
+      LIMIT 100
+    `;
+
+    bindings.push(query,pattern);
+
+    const statement = database.prepare(sql);
+    statement.bind(bindings);
+
+    const grouped = new Map();
+
+    while(statement.step()){
+      const row = statement.getAsObject();
+      const id = row.id;
+
+      if(!grouped.has(id)){
+        grouped.set(id,{
+          id:id,
+          word:row.word,
+          source:row.name,
+          meanings:[]
+        });
+      }
+
+      if(row.meaning_text){
+        grouped.get(id).meanings.push(row.meaning_text);
+      }
+    }
+
+    statement.free();
+
+    renderResults(Array.from(grouped.values()));
+  }catch(error){
+    console.error(error);
+    showStatus("Có lỗi khi tìm kiếm: " + error.message);
+  }
 }
-showResults(words.filter(w=>
-[w.word,w.vi,w.en,w.type,w.definition,w.synonyms]
-.some(x=>x.toLocaleLowerCase().includes(q))
-));
+
+function renderResults(items){
+  $("found").textContent = items.length + " kết quả";
+
+  if(items.length === 0){
+    $("results").innerHTML =
+      '<div class="empty">Không tìm thấy từ này trong kho dữ liệu.<br>Thử từ khóa khác nhé.</div>';
+    showStatus("Hoàn tất tìm kiếm.");
+    return;
+  }
+
+  $("results").innerHTML = items.map(item => {
+    const meanings = item.meanings.length
+      ? item.meanings.map(m =>
+          '<div class="meaning">' + escapeHTML(m) + '</div>'
+        ).join("")
+      : '<div class="meaning">Chưa có phần giải nghĩa.</div>';
+
+    const active = favorites.has(item.id);
+
+    return `
+      <article class="result">
+        <div class="wordline">
+          <div class="word">${escapeHTML(item.word)}</div>
+          <button class="favorite" data-fav="${item.id}"
+            aria-label="Yêu thích">${active ? "★" : "☆"}</button>
+        </div>
+        <div class="source">Nguồn: ${escapeHTML(item.source || "Chưa rõ")}</div>
+        ${meanings}
+      </article>
+    `;
+  }).join("");
+
+  document.querySelectorAll("[data-fav]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = Number(button.dataset.fav);
+
+      if(favorites.has(id)){
+        favorites.delete(id);
+      }else{
+        favorites.add(id);
+      }
+
+      localStorage.setItem(
+        "medFavorites",
+        JSON.stringify(Array.from(favorites))
+      );
+
+      button.textContent = favorites.has(id) ? "★" : "☆";
+    });
+  });
+
+  showStatus("Đã tìm thấy kết quả.");
+}
+
+$("searchBtn").addEventListener("click",searchDictionary);
+
+$("search").addEventListener("keydown",event => {
+  if(event.key === "Enter") searchDictionary();
 });
-showSaved();
+
 if("serviceWorker" in navigator){
-window.addEventListener("load",()=>{
-navigator.serviceWorker.register("./sw.js")
-.then(()=>console.log("Offline-Modus aktiviert"))
-.catch(error=>console.error("Service Worker Fehler:",error));
-});
+  navigator.serviceWorker.register("./sw.js")
+    .catch(error => console.error("Service Worker:",error));
 }
+
+loadDatabase();
 </script>
 </body>
 </html>
