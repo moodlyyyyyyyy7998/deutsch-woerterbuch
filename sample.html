@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mẫu dữ liệu từ điển</title>
+<style>
+body{font-family:Arial,sans-serif;padding:16px;background:#f3f6f4;color:#18352b}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:14px;border-radius:10px;font-size:13px;line-height:1.5}
+button{padding:12px;background:#174c3c;color:white;border:0;border-radius:8px}
+</style>
+</head>
+<body>
+<h2>Kiểm tra từ vựng thực tế</h2>
+<p id="status">Đang tải dữ liệu...</p>
+<button id="copy" disabled>Sao chép kết quả</button>
+<pre id="result">Vui lòng chờ...</pre>
+
+<script src="./sql-wasm.js"></script>
+<script>
+async function start(){
+  const status=document.getElementById("status");
+  const result=document.getElementById("result");
+  const copy=document.getElementById("copy");
+
+  try{
+    const SQL=await initSqlJs({
+      locateFile:file=>"./"+file
+    });
+
+    const response=await fetch("./vn_de_dictionary.db");
+    if(!response.ok) throw new Error("Không tải được DB: "+response.status);
+
+    const buffer=await response.arrayBuffer();
+    const db=new SQL.Database(new Uint8Array(buffer));
+
+    let output="KÍCH THƯỚC: "+
+      (buffer.byteLength/1048576).toFixed(2)+" MB\n\n";
+
+    const counts=db.exec(`
+      SELECT
+        (SELECT COUNT(*) FROM words) AS total_words,
+        (SELECT COUNT(*) FROM meanings) AS total_meanings
+    `);
+
+    if(counts.length){
+      output+="TỔNG SỐ TỪ: "+counts[0].values[0][0]+"\n";
+      output+="TỔNG SỐ NGHĨA: "+counts[0].values[0][1]+"\n\n";
+    }
+
+    output+="DANH SÁCH 25 TỪ ĐẦU TIÊN:\n";
+    output+="================================\n";
+
+    const rows=db.exec(`
+      SELECT
+        w.word,
+        m.part_of_speech,
+        m.meaning_text,
+        s.name
+      FROM words w
+      LEFT JOIN meanings m ON m.word_id=w.id
+      LEFT JOIN sources s ON s.id=m.source_id
+      ORDER BY w.id
+      LIMIT 25
+    `);
+
+    if(rows.length){
+      for(const row of rows[0].values){
+        output+="\nTỪ: "+(row[0]??"")+"\n";
+        output+="LOẠI TỪ: "+(row[1]??"Chưa có")+"\n";
+        output+="NGHĨA: "+(row[2]??"Chưa có")+"\n";
+        output+="NGUỒN: "+(row[3]??"Chưa rõ")+"\n";
+        output+="--------------------------------\n";
+      }
+    }
+
+    result.textContent=output;
+    status.textContent="Đã kiểm tra dữ liệu thành công!";
+    copy.disabled=false;
+
+    copy.onclick=async()=>{
+      await navigator.clipboard.writeText(output);
+      status.textContent="Đã sao chép kết quả!";
+    };
+
+    db.close();
+  }catch(error){
+    status.textContent="Có lỗi xảy ra";
+    result.textContent=error.message;
+  }
+}
+start();
+</script>
+</body>
+</html>
